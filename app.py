@@ -4,23 +4,23 @@ import wikipedia
 import requests
 from googlesearch import search
 
-st.set_page_config(page_title="TamilGPT", page_icon="🤖", layout="wide")
+st.set_page_config(page_title="AnswerBot", page_icon="🤖", layout="wide")
 
-st.title("TamilGPT 🤖")
+st.title("AnswerBot 🤖")
 st.markdown("Ungaloda smart Tamil AI assistant 🔥")
 
 # ---------------- BASIC KNOWLEDGE ---------------- #
 
 knowledge = {
     "vanakkam": "Vanakkam 😊 Ungalukku eppadi help panna?",
-    "nee yaru": "Naan unga TamilGPT assistant 😎",
+    "nee yaru": "Naan unga AnswerBot assistant 😎",
     "who created you": "Naan Python & Streamlit use panni create pannapatten 😁"
 }
 
 default_replies = [
     "Konjam detail ah sollunga 😄",
-    "Interesting question 🤔",
-    "Idha konjam clarify pannunga 👀"
+    "na innum kathukitu iruka 🤔",
+    "na training eduthutu iruka seekram best answer kuduka 👀"
 ]
 
 # ---------------- WEATHER FUNCTION ---------------- #
@@ -128,3 +128,4 @@ if col2.button("➤"):
 if st.button("Clear Chat 🗑️"):
     st.session_state.chat_history = []
     st.rerun()
+
