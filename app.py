@@ -93,15 +93,16 @@ if col2.button("➤") and user_input.strip():
 
     # 2️⃣ Weather
     elif "weather" in question:
-        parts = question.replace("weather", "").replace("in", "").strip()
-        city = parts if parts else "Chennai"
+        city = question.replace("weather", "").replace("in", "").strip()
+        if city == "":
+            city = "Chennai"
         response = get_weather(city)
 
     # 3️⃣ Local Knowledge
     elif question in knowledge:
         response = knowledge[question]
 
-    # 4️⃣ Wikipedia / Google
+    # 4️⃣ Wikipedia / Google fallback
     else:
         try:
             wikipedia.set_lang("en")
@@ -113,7 +114,7 @@ if col2.button("➤") and user_input.strip():
     st.session_state.chat_history.append(("You", user_input))
     st.session_state.chat_history.append(("Bot", response))
 
-    # ✅ Clear input box immediately after sending
+    # ✅ Clear input box immediately
     st.session_state.user_input = ""
     st.rerun()
 
