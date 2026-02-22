@@ -38,8 +38,6 @@ elif "weather" in question:
         city = words[0]
     
     response = get_weather(city)
-
-
 # ---------------- GOOGLE SEARCH ---------------- #
 
 def google_search(query):
@@ -136,5 +134,6 @@ for sender, message in st.session_state.chat_history:
         st.markdown(f"**{sender}:** {message}")
     else:
         st.markdown(f"**{sender}:** {message}")
+
 
 
