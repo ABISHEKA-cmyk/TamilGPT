@@ -80,60 +80,53 @@ st.markdown("---")
 col1, col2 = st.columns([6,1])
 
 user_input = col1.text_input("Type your message...", label_visibility="collapsed")
-
-if col2.button("➤") or (user_input and st.session_state.get("last_input") != user_input):
+if col2.button("➤"):
 
     if user_input:
-        st.session_state.last_input = user_input
-        question = user_input.lower()
+
+        question = user_input.lower().strip()
         response = ""
 
-        # 1️⃣ Greetings direct reply
-        if question in greetings:
-            response = "Hey vanakkam! 😊 Eppadi help pannalam?"
-
-        # 2️⃣ Calculator
-        elif any(op in question for op in ["+", "-", "*", "/"]):
+        # 1️⃣ Calculator
+        if any(op in question for op in ["+", "-", "*", "/"]):
             try:
                 result = eval(question)
                 response = f"🧮 Answer: {result}"
             except:
                 response = "Calculator error 😅"
 
-        # 3️⃣ Weather
+        # 2️⃣ Weather
         elif "weather" in question:
-            words = question.split("in")
-            city = words[1].strip() if len(words) > 1 else "Chennai"
+
+            words = question.split()
+            city = None
+
+            if "in" in words:
+                index = words.index("in")
+                if index + 1 < len(words):
+                    city = words[index + 1]
+
+            if city is None and len(words) > 1:
+                city = words[0]
+
+            if city is None:
+                city = "Chennai"
+
             response = get_weather(city)
 
-        # 4️⃣ Local Knowledge
+        # 3️⃣ Local Knowledge
+        elif question in knowledge:
+            response = knowledge[question]
+
+        # 4️⃣ Wikipedia / Google fallback
         else:
-            found = False
-            for key in knowledge:
-                if key in question:
-                    response = knowledge[key]
-                    found = True
-                    break
+            try:
+                wikipedia.set_lang("en")
+                response = wikipedia.summary(user_input, sentences=2)
+            except:
+                response = google_search(user_input)
 
-            # 5️⃣ Wikipedia
-            if not found:
-                try:
-                    wikipedia.set_lang("en")
-                    response = wikipedia.summary(user_input, sentences=2)
-                except:
-                    response = google_search(user_input)
-
-        st.session_state.chat_history.append(("🧑 You", user_input))
-        st.session_state.chat_history.append(("🤖 Bot", response))
+        st.session_state.chat_history.append(("You", user_input))
+        st.session_state.chat_history.append(("Bot", response))
         st.rerun()
-
-# ---------------- MAIN CHAT DISPLAY ---------------- #
-
-for sender, message in st.session_state.chat_history:
-    if "You" in sender:
-        st.markdown(f"**{sender}:** {message}")
-    else:
-        st.markdown(f"**{sender}:** {message}")
-
-
 
