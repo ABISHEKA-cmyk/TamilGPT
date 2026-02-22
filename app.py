@@ -26,23 +26,30 @@ default_replies = [
 ]
 
 # ---------------- WEATHER FUNCTION ---------------- #
-
 def get_weather(city):
     try:
-        api_key = st.secrets["3187ea149fd7bd9f10294e6f442727ab"]
-        url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
+        # Step 1: Get latitude & longitude using Open-Meteo geocoding
+        geo_url = f"https://geocoding-api.open-meteo.com/v1/search?name={city}"
+        geo_res = requests.get(geo_url).json()
 
-        response = requests.get(url)
-        data = response.json()
+        if "results" not in geo_res:
+            return "City kidaikala 😅"
 
-        if data["cod"] == 200:
-            temp = data["main"]["temp"]
-            desc = data["weather"][0]["description"]
-            return f"🌤️ {city.title()} Weather:\nTemperature: {temp}°C\nCondition: {desc}"
-        else:
-            return "Weather info kidaikala 😅"
+        lat = geo_res["results"][0]["latitude"]
+        lon = geo_res["results"][0]["longitude"]
+
+        # Step 2: Get weather data
+        weather_url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true"
+        weather_res = requests.get(weather_url).json()
+
+        temp = weather_res["current_weather"]["temperature"]
+        wind = weather_res["current_weather"]["windspeed"]
+
+        return f"🌤️ {city.title()} Weather:\n🌡 Temperature: {temp}°C\n💨 Wind Speed: {wind} km/h"
+
     except:
-        return "Weather system error 😅"
+        return "Weather error 😅"
+
 
 # ---------------- GOOGLE SEARCH ---------------- #
 
@@ -140,3 +147,4 @@ for sender, message in st.session_state.chat_history:
         st.markdown(f"**{sender}:** {message}")
     else:
         st.markdown(f"**{sender}:** {message}")
+
