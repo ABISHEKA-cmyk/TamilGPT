@@ -10,7 +10,7 @@ st.title("AnswerBot 🤖")
 st.markdown("Ungaloda smart Tamil AI assistant 🔥")
 user_input=user_input.lower()
 if user_input in ["hi","Hi","Hello","hello","hlo","Hey","Vanakkam"]:
-response="Hey vanakkam eppadi help pannanum?","Hi,solu ena pannanum?"
+response="Hey vanakkam eppadi help pannanum?"
 else:
 #normal LLM call
 
@@ -133,6 +133,7 @@ if col2.button("➤"):
 if st.button("Clear Chat 🗑️"):
     st.session_state.chat_history = []
     st.rerun()
+
 
 
 
