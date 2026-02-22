@@ -26,29 +26,18 @@ default_replies = [
 ]
 
 # ---------------- WEATHER FUNCTION ---------------- #
-def get_weather(city):
-    try:
-        # Step 1: Get latitude & longitude using Open-Meteo geocoding
-        geo_url = f"https://geocoding-api.open-meteo.com/v1/search?name={city}"
-        geo_res = requests.get(geo_url).json()
-
-        if "results" not in geo_res:
-            return "City kidaikala 😅"
-
-        lat = geo_res["results"][0]["latitude"]
-        lon = geo_res["results"][0]["longitude"]
-
-        # Step 2: Get weather data
-        weather_url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true"
-        weather_res = requests.get(weather_url).json()
-
-        temp = weather_res["current_weather"]["temperature"]
-        wind = weather_res["current_weather"]["windspeed"]
-
-        return f"🌤️ {city.title()} Weather:\n🌡 Temperature: {temp}°C\n💨 Wind Speed: {wind} km/h"
-
-    except:
-        return "Weather error 😅"
+elif "weather" in question:
+    
+    words = question.split()
+    
+    # Find city name after "weather"
+    if "in" in words:
+        city = words[words.index("in") + 1]
+    else:
+        # If user types "mumbai weather"
+        city = words[0]
+    
+    response = get_weather(city)
 
 
 # ---------------- GOOGLE SEARCH ---------------- #
@@ -147,4 +136,5 @@ for sender, message in st.session_state.chat_history:
         st.markdown(f"**{sender}:** {message}")
     else:
         st.markdown(f"**{sender}:** {message}")
+
 
