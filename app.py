@@ -8,14 +8,6 @@ st.set_page_config(page_title="AnswerBot", page_icon="🤖", layout="wide")
 
 st.title("AnswerBot 🤖")
 st.markdown("Ungaloda smart Tamil AI assistant 🔥")
-user_input=st.text_input("type your message")
-if user_input:
-    user_input=user_input.lower()
-if user_input in ["hi","Hi","Hello","hello","hlo","Hey","Vanakkam"]:
-    response= "Hey vanakkam! eppadi help pannanum?"
-else:
-    response="na ungaluku help pana ready"
-    st.write(response)
 
 # ---------------- BASIC KNOWLEDGE ---------------- #
 
@@ -25,10 +17,12 @@ knowledge = {
     "who created you": "Naan Python & Streamlit use panni create pannapatten 😁"
 }
 
+greetings = ["hi", "hello", "hlo", "hey", "vanakkam"]
+
 default_replies = [
     "Konjam detail ah sollunga 😄",
-    "na innum kathukitu iruka 🤔",
-    "na training eduthutu iruka seekram best answer kuduka 👀"
+    "Interesting question 🤔",
+    "Idha konjam clarify pannunga 👀"
 ]
 
 # ---------------- WEATHER FUNCTION ---------------- #
@@ -67,50 +61,58 @@ def google_search(query):
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-# ---------------- DISPLAY CHAT ---------------- #
+if "show_history" not in st.session_state:
+    st.session_state.show_history = False
 
-chat_container = st.container()
+# ---------------- SIDEBAR (3 DOT STYLE) ---------------- #
 
-with chat_container:
-    for sender, message in st.session_state.chat_history:
-        if sender == "You":
-            st.markdown(f"**🧑 You:** {message}")
-        else:
-            st.markdown(f"**🤖 Bot:** {message}")
+with st.sidebar:
+    if st.button("⋮ Chat History"):
+        st.session_state.show_history = not st.session_state.show_history
 
-st.markdown("---")
+    if st.session_state.show_history:
+        st.markdown("### 💬 Chat History")
+        for sender, message in st.session_state.chat_history:
+            st.markdown(f"**{sender}:** {message}")
+
+        if st.button("Clear Chat 🗑️"):
+            st.session_state.chat_history = []
+            st.rerun()
 
 # ---------------- INPUT AREA ---------------- #
 
-col1, col2 = st.columns([5,1])
+st.markdown("---")
+
+col1, col2 = st.columns([6,1])
 
 user_input = col1.text_input("Type your message...", label_visibility="collapsed")
 
-if col2.button("➤"):
+if col2.button("➤") or (user_input and st.session_state.get("last_input") != user_input):
 
     if user_input:
-
+        st.session_state.last_input = user_input
         question = user_input.lower()
         response = ""
 
-        # 1️⃣ Calculator
-        if any(op in question for op in ["+", "-", "*", "/"]):
+        # 1️⃣ Greetings direct reply
+        if question in greetings:
+            response = "Hey vanakkam! 😊 Eppadi help pannalam?"
+
+        # 2️⃣ Calculator
+        elif any(op in question for op in ["+", "-", "*", "/"]):
             try:
                 result = eval(question)
                 response = f"🧮 Answer: {result}"
             except:
                 response = "Calculator error 😅"
 
-        # 2️⃣ Weather
+        # 3️⃣ Weather
         elif "weather" in question:
             words = question.split("in")
-            if len(words) > 1:
-                city = words[1].strip()
-            else:
-                city = "Chennai"
+            city = words[1].strip() if len(words) > 1 else "Chennai"
             response = get_weather(city)
 
-        # 3️⃣ Local Knowledge
+        # 4️⃣ Local Knowledge
         else:
             found = False
             for key in knowledge:
@@ -119,7 +121,7 @@ if col2.button("➤"):
                     found = True
                     break
 
-            # 4️⃣ Wikipedia
+            # 5️⃣ Wikipedia
             if not found:
                 try:
                     wikipedia.set_lang("en")
@@ -127,23 +129,14 @@ if col2.button("➤"):
                 except:
                     response = google_search(user_input)
 
-        st.session_state.chat_history.append(("You", user_input))
-        st.session_state.chat_history.append(("Bot", response))
+        st.session_state.chat_history.append(("🧑 You", user_input))
+        st.session_state.chat_history.append(("🤖 Bot", response))
         st.rerun()
 
-# ---------------- CLEAR CHAT ---------------- #
+# ---------------- MAIN CHAT DISPLAY ---------------- #
 
-if st.button("Clear Chat 🗑️"):
-    st.session_state.chat_history = []
-    st.rerun()
-
-
-
-
-
-
-
-
-
-
-
+for sender, message in st.session_state.chat_history:
+    if "You" in sender:
+        st.markdown(f"**{sender}:** {message}")
+    else:
+        st.markdown(f"**{sender}:** {message}")
