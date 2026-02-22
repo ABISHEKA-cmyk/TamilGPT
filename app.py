@@ -1,79 +1,91 @@
 import streamlit as st
 import random
+import wikipedia
+import requests
+from googlesearch import search
 
-st.set_page_config(page_title="TamilGPT", page_icon="🤖")
+st.set_page_config(page_title="TamilGPT", page_icon="🤖", layout="wide")
 
 st.title("TamilGPT 🤖")
-st.write("Ungal Tamil Assistant")
+st.markdown("Ungaloda smart Tamil AI assistant 🔥")
 
-# ---------------- KNOWLEDGE DATABASE ---------------- #
+# ---------------- BASIC KNOWLEDGE ---------------- #
 
 knowledge = {
-
-# Greetings
-"vanakkam": "Vanakkam 😊 Ungalukku eppadi help panna?",
-"hello": "Hello 👋",
-"hi": "Hi 😄",
-"good morning": "Good Morning ☀️",
-"good night": "Good Night 🌙",
-
-# Personal
-"nee yaru": "Naan unga Tamil assistant 😎",
-"ungal peyar": "En peyar TamilGPT 🤖",
-"epadi iruka": "Naan nalla iruken 😄 Neenga epadi?",
-
-# Education
-"school": "Padippu mukkiyam 📚",
-"college": "College life super 🎓",
-"exam": "Nalla prepare pannunga ✍️",
-
-# Motivation
-"success": "Hard work panna success varum 💪",
-"failure": "Tholviyum oru lesson dhaan 📘",
-"dream": "Kanavu kaanum ungal future 🔥",
-
-# Tech
-"python": "Python easy programming language 🐍",
-"ai": "AI na Artificial Intelligence 🤖",
-
-# Tamil Nadu
-"tamil": "Tamil oru pazhamaiana mozhi ❤️",
-"chennai": "Chennai Tamil Nadu capital 🏙️",
-"india": "India oru periya naadu 🇮🇳",
-
-# Add your own below 👇
-# "your question": "your answer",
-
+    "vanakkam": "Vanakkam 😊 Ungalukku eppadi help panna?",
+    "nee yaru": "Naan unga TamilGPT assistant 😎",
+    "who created you": "Naan Python & Streamlit use panni create pannapatten 😁"
 }
 
 default_replies = [
     "Konjam detail ah sollunga 😄",
     "Interesting question 🤔",
-    "Naan innum kathukittu iruken 😅",
-    "Nice kelvi 👍",
+    "Idha konjam clarify pannunga 👀"
 ]
 
-# ---------------- SESSION MEMORY ---------------- #
+# ---------------- WEATHER FUNCTION ---------------- #
+
+def get_weather(city):
+    try:
+        api_key = st.secrets["3187ea149fd7bd9f10294e6f442727ab"]
+        url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
+
+        response = requests.get(url)
+        data = response.json()
+
+        if data["cod"] == 200:
+            temp = data["main"]["temp"]
+            desc = data["weather"][0]["description"]
+            return f"🌤️ {city.title()} Weather:\nTemperature: {temp}°C\nCondition: {desc}"
+        else:
+            return "Weather info kidaikala 😅"
+    except:
+        return "Weather system error 😅"
+
+# ---------------- GOOGLE SEARCH ---------------- #
+
+def google_search(query):
+    try:
+        results = list(search(query, num_results=3))
+        if results:
+            return f"🔎 Google Result:\n{results[0]}"
+        else:
+            return "Google la result kidaikala 😅"
+    except:
+        return "Search error 😅"
+
+# ---------------- SESSION ---------------- #
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-# ---------------- USER INPUT ---------------- #
+# ---------------- DISPLAY CHAT ---------------- #
 
-user_input = st.text_input("Ungal kelvi:")
+chat_container = st.container()
 
-col1, col2 = st.columns(2)
+with chat_container:
+    for sender, message in st.session_state.chat_history:
+        if sender == "You":
+            st.markdown(f"**🧑 You:** {message}")
+        else:
+            st.markdown(f"**🤖 Bot:** {message}")
 
-# ---------------- ENTER BUTTON ---------------- #
+st.markdown("---")
 
-if col1.button("Enter ✅"):
+# ---------------- INPUT AREA ---------------- #
+
+col1, col2 = st.columns([5,1])
+
+user_input = col1.text_input("Type your message...", label_visibility="collapsed")
+
+if col2.button("➤"):
 
     if user_input:
 
         question = user_input.lower()
         response = ""
 
-        # Calculator check
+        # 1️⃣ Calculator
         if any(op in question for op in ["+", "-", "*", "/"]):
             try:
                 result = eval(question)
@@ -81,34 +93,38 @@ if col1.button("Enter ✅"):
             except:
                 response = "Calculator error 😅"
 
+        # 2️⃣ Weather
+        elif "weather" in question:
+            words = question.split("in")
+            if len(words) > 1:
+                city = words[1].strip()
+            else:
+                city = "Chennai"
+            response = get_weather(city)
+
+        # 3️⃣ Local Knowledge
         else:
             found = False
-
             for key in knowledge:
                 if key in question:
                     response = knowledge[key]
                     found = True
                     break
 
+            # 4️⃣ Wikipedia
             if not found:
-                response = random.choice(default_replies)
+                try:
+                    wikipedia.set_lang("en")
+                    response = wikipedia.summary(user_input, sentences=2)
+                except:
+                    response = google_search(user_input)
 
-        # Save chat history
         st.session_state.chat_history.append(("You", user_input))
         st.session_state.chat_history.append(("Bot", response))
+        st.rerun()
 
-# ---------------- CLEAR BUTTON ---------------- #
+# ---------------- CLEAR CHAT ---------------- #
 
-if col2.button("Clear Chat 🗑️"):
+if st.button("Clear Chat 🗑️"):
     st.session_state.chat_history = []
-
-# ---------------- SHOW CHAT HISTORY ---------------- #
-
-st.write("---")
-st.subheader("Chat History")
-
-for sender, message in st.session_state.chat_history:
-    if sender == "You":
-        st.write(f"🧑 You: {message}")
-    else:
-        st.write(f"🤖 Bot: {message}")
+    st.rerun()
