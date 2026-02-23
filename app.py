@@ -70,18 +70,28 @@ def google_search(query):
         return "Search error 😅"
 
 # ------------------ Safe Calculator ------------------ #
-ops = {ast.Add: operator.add, ast.Sub: operator.sub,
-       ast.Mult: operator.mul, ast.Div: operator.truediv}
-
 def safe_eval(expr):
     try:
+        # Step 1: String-a tree-ah mathuvom
         node = ast.parse(expr, mode='eval').body
-        if type(node) in ops:
-            return ops[type(node)](safe_eval(node.left), safe_eval(node.right))
-        elif isinstance(node, ast.Constant):
-            return node.value
-    except:
-        return "Calculator error 😅"
+        
+        # Step 2: Helper function to calculate recursively
+        def eval_node(node):
+            # Enn (Number) ah irundha apdiye return pannu
+            if isinstance(node, ast.Constant): 
+                return node.value
+            # Operator (+, -, *, /) ah irundha calculation pannu
+            elif type(node.op) in ops:
+                left_val = eval_node(node.left)
+                right_val = eval_node(node.right)
+                return ops[type(node.op)](left_val, right_val)
+            else:
+                raise ValueError("Unsupported operation")
+
+        return eval_node(node)
+    except Exception as e:
+        return f"Calculator error 😅"
+
 
 # ------------------ Session ------------------ #
 if "chat_history" not in st.session_state:
@@ -145,6 +155,7 @@ if col2.button("➤"):
 if st.button("Clear Chat 🗑️"):
 
     st.session_state.chat_history = []
+
 
 
 
