@@ -13,6 +13,7 @@ st.markdown("Ungaloda smart Tamil AI assistant 🔥")
 # ------------------ Basic Knowledge ------------------ #
 knowledge = {
     "vanakkam": "Vanakkam 😊 Ungalukku eppadi help panna?",
+    "hi","hlo","Hi","Hello","Hey":"solunga ungaluku ena help venum",
     "nee yaru": "Naan unga AnswerBot assistant 😎",
     "who created you": "Naan Python & Streamlit use panni create pannapatten 😁"
 }
@@ -123,3 +124,4 @@ if col2.button("➤"):
 if st.button("Clear Chat 🗑️"):
 
     st.session_state.chat_history = []
+
