@@ -157,12 +157,14 @@ if col2.button("➤"):
         st.session_state.chat_history.append(("Bot", response))
 
         # Clear input box
+        st.session_state.input_box = " " 
         st.rerun()
 
 # ------------------ Clear Chat ------------------ #
 if st.button("Clear Chat 🗑️"):
 
     st.session_state.chat_history = []
+
 
 
 
