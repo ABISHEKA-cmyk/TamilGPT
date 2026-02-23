@@ -13,9 +13,15 @@ st.markdown("Ungaloda smart Tamil AI assistant 🔥")
 # ------------------ Basic Knowledge ------------------ #
 knowledge = {
     "vanakkam": "Vanakkam 😊 Ungalukku eppadi help panna?",
-    "hi","hlo","Hi","Hello","Hey":"solunga ungaluku ena help venum",
+    "hi": "Hi ungaluku ena help venum",
+    "hlo": "hlo ungaluku ena help venum",
+    "hello": "hello ungaluku ena help venum",
+    "Hi": "Hi ungaluku ena help venum",
+    "Hello": "Hello ungaluku ena help venum",
+    "hey": "hey ungaluku ena help venum",
+    "Hey": "Hey ungaluku ena help venum",
     "nee yaru": "Naan unga AnswerBot assistant 😎",
-    "who created you": "Naan Python & Streamlit use panni create pannapatten 😁"
+    "who created you": "Naan Python & Streamlit use panni abisheka create pannina oru assistant😁"
 }
 
 default_replies = [
@@ -124,4 +130,5 @@ if col2.button("➤"):
 if st.button("Clear Chat 🗑️"):
 
     st.session_state.chat_history = []
+
 
