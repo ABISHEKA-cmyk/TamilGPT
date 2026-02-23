@@ -116,7 +116,9 @@ st.markdown("---")
 
 # ------------------ Input Area ------------------ #
 col1, col2 = st.columns([5,1])
+# key="input_box" nu neenga kuduthurukinga, athanala session state use panna mudiyum
 user_input = col1.text_input("Type your message...", key="input_box", label_visibility="collapsed")
+
 
 if col2.button("➤"):
     if user_input:
@@ -161,6 +163,7 @@ if col2.button("➤"):
 if st.button("Clear Chat 🗑️"):
 
     st.session_state.chat_history = []
+
 
 
 
