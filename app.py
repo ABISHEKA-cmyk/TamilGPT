@@ -33,15 +33,30 @@ default_replies = [
 # ------------------ Weather Function ------------------ #
 def get_weather(city):
     try:
-        # Use Open-Meteo free API
-        url = f"https://api.open-meteo.com/v1/forecast?latitude=13.08&longitude=80.27&current_weather=true"  # Chennai default
-        response = requests.get(url)
+        
+        geo_url = f"https://geocoding-api.open-meteo.com/v1/search?name={city}&count=1&language=en&format=json"
+        geo_response = requests.get(geo_url).json()
+        
+        if not geo_response.get("results"):
+            return f"Sariyaana city name kudunga. {city} kidaikala! 😅"
+            
+        lat = geo_response["results"][0]["latitude"]
+        lon = geo_response["results"][0]["longitude"]
+
+        
+        weather_url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true"
+        response = requests.get(weather_url)
         data = response.json()
+        
         temp = data["current_weather"]["temperature"]
         wind = data["current_weather"]["windspeed"]
-        return f"🌤️ {city.title()} Weather:\nTemperature: {temp}°C\nWind Speed: {wind} km/h"
-    except:
+        
+        return f"☁️ {city.title()} Weather:\nTemperature: {temp}°C\nWind Speed: {wind} km/h"
+    
+    except Exception:
         return "Weather info kidaikala 😅"
+
+
 
 # ------------------ Google Search Function ------------------ #
 def google_search(query):
@@ -130,5 +145,6 @@ if col2.button("➤"):
 if st.button("Clear Chat 🗑️"):
 
     st.session_state.chat_history = []
+
 
 
