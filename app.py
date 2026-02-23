@@ -75,6 +75,7 @@ ops= {
     ast.Sub: operator.sub,
     ast.Mult: operator.mul,
     ast.Div: operator.truediv,
+}
 def safe_eval(expr):
     try:
         # Step 1: String-a tree-ah mathuvom
@@ -160,6 +161,7 @@ if col2.button("➤"):
 if st.button("Clear Chat 🗑️"):
 
     st.session_state.chat_history = []
+
 
 
 
